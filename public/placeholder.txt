@@ -1,0 +1,1 @@
+This folder is intended for static assets (e.g., put your images in public/assets and reference them from src/Museum.jsx)
