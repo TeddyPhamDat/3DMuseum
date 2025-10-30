@@ -70,22 +70,22 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
 function Floor() {
   return (
     <>
-      {/* Sàn chính (cỏ xanh) */}
+      {/* Sàn chính (cỏ xanh) - mở rộng hơn */}
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <planeGeometry args={[35, 35]} />
+        <planeGeometry args={[40, 40]} />
         <meshStandardMaterial color={'#228B22'} />
       </mesh>
       
-      {/* Đường đi dẫn đến cửa */}
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 14]}>
-        <planeGeometry args={[4, 8]} />
-        <meshStandardMaterial color={'#696969'} />
+      {/* Sàn bên trong bảo tàng - mở rộng ra gần cửa hơn */}
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+        <planeGeometry args={[20, 22]} />
+        <meshStandardMaterial color={'#F5F5DC'} />
       </mesh>
       
-      {/* Sàn bên trong bảo tàng */}
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-        <planeGeometry args={[19, 19]} />
-        <meshStandardMaterial color={'#F5F5DC'} />
+      {/* Đường đi dẫn đến cửa - nối liền */}
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 12]}>
+        <planeGeometry args={[4, 6]} />
+        <meshStandardMaterial color={'#696969'} />
       </mesh>
     </>
   )
@@ -276,75 +276,112 @@ function DisplayCase({ position, artifactType }) {
 }
 
 function Door({ position = [0, 1, 5] }) {
-  const doorRef = useRef()
+  const leftDoorRef = useRef()
+  const rightDoorRef = useRef()
+  const groupRef = useRef()
   const [isOpen, setIsOpen] = useState(false)
 
   useFrame((state, delta) => {
-    if (!doorRef.current) return
-    const targetRotation = isOpen ? -Math.PI / 2.2 : 0
-    doorRef.current.rotation.y += (targetRotation - doorRef.current.rotation.y) * delta * 4
+    if (!leftDoorRef.current || !rightDoorRef.current || !groupRef.current) return
+
+    const camPos = state.camera.position
+    const doorWorldPos = new THREE.Vector3()
+    groupRef.current.getWorldPosition(doorWorldPos)
+    const distance = camPos.distanceTo(doorWorldPos)
+
+    // Open the door whenever the player is near (either side) so exiting/entering works both ways.
+    const openDistance = 5
+    const closeDistance = 6
+
+    const shouldOpen = distance < openDistance
+    const shouldClose = distance > closeDistance
+
+    if (shouldOpen && !isOpen) setIsOpen(true)
+    if (shouldClose && isOpen) setIsOpen(false)
+
+    // Expose current door state for movement logic (FirstPersonControls) to read.
+    if (typeof window !== 'undefined') window.__DOOR_OPEN = isOpen
+
+    // Góc xoay: mở ra ngoài (-90 độ cho trái, +90 độ cho phải)
+    const leftTargetRotation = isOpen ? Math.PI / 2 : 0
+    const rightTargetRotation = isOpen ? -Math.PI / 2 : 0
+
+    // Animation mượt cho cả 2 cánh
+    leftDoorRef.current.rotation.y += (leftTargetRotation - leftDoorRef.current.rotation.y) * delta * 4
+    rightDoorRef.current.rotation.y += (rightTargetRotation - rightDoorRef.current.rotation.y) * delta * 4
   })
 
   return (
-    <group position={position}>
-      {/* Khung cửa chính - vững chắc hơn */}
-      <mesh position={[0, 1.2, 0]} castShadow>
-        <boxGeometry args={[3.4, 3, 0.25]} />
+    <group ref={groupRef} position={position}>
+      {/* CHỈ có khung trên - KHÔNG có cột trái phải */}
+      <mesh position={[0, 2.7, 0]} castShadow>
+        <boxGeometry args={[3.4, 0.6, 0.25]} />
         <meshStandardMaterial color={'#654321'} />
       </mesh>
       
-      {/* Khoảng trống cửa - rộng hơn */}
-      <mesh position={[0, 1.2, 0]}>
-        <boxGeometry args={[2.6, 2.6, 0.3]} />
-        <meshStandardMaterial transparent opacity={0} />
-      </mesh>
+      {/* TƯỜNG VÔ HÌNH BÍT LỖ - chỉ hiện khi cửa đóng */}
+      {!isOpen && (
+        <>
+          {/* Bít lỗ trái */}
+          <mesh position={[-1.3, 1.2, 0.05]}>
+            <boxGeometry args={[1.3, 2.4, 0.1]} />
+            <meshStandardMaterial transparent opacity={0} />
+          </mesh>
+          {/* Bít lỗ phải */}
+          <mesh position={[1.3, 1.2, 0.05]}>
+            <boxGeometry args={[1.3, 2.4, 0.1]} />
+            <meshStandardMaterial transparent opacity={0} />
+          </mesh>
+        </>
+      )}
       
-      {/* Cửa trái (cố định) */}
-      <mesh position={[-0.65, 1.2, 0.05]} castShadow>
-        <boxGeometry args={[1.3, 2.6, 0.08]} />
-        <meshStandardMaterial color={'#8B4513'} />
-      </mesh>
-      
-      {/* Tay nắm cửa trái */}
-      <mesh position={[-0.2, 1.2, 0.1]}>
-        <sphereGeometry args={[0.04]} />
-        <meshStandardMaterial color={'#FFD700'} />
-      </mesh>
-      
-      {/* Cửa phải (có thể mở) - pivot tại cạnh */}
-      <group position={[1.3, 0, 0]}>
+      {/* Cửa trái - pivot tại cạnh trái - TAY NẮM XOAY THEO */}
+      <group position={[-1.3, 0, 0]} ref={leftDoorRef}>
         <mesh
-          ref={doorRef}
-          position={[-0.65, 1.2, 0.05]}
+          position={[0.65, 1.2, 0.05]}
           onClick={(e) => {
             e.stopPropagation()
-            setIsOpen(!isOpen)
+            setIsOpen((s) => !s)
           }}
           onPointerOver={() => document.body.style.cursor = 'pointer'}
           onPointerOut={() => document.body.style.cursor = 'default'}
           castShadow
         >
-          <boxGeometry args={[1.3, 2.6, 0.08]} />
+          <boxGeometry args={[1.3, 2.4, 0.08]} />
           <meshStandardMaterial color={'#8B4513'} />
         </mesh>
 
-        {/* Tay nắm cửa phải */}
-        <mesh 
-          ref={doorRef}
-          position={[-0.2, 1.2, 0.1]}
+        {/* Tay nắm cửa trái - trong cùng group nên sẽ xoay theo */}
+        <mesh position={[1.1, 1.2, 0.1]}>
+          <sphereGeometry args={[0.04]} />
+          <meshStandardMaterial color={'#FFD700'} />
+        </mesh>
+      </group>
+      
+      {/* Cửa phải - pivot tại cạnh phải - TAY NẮM XOAY THEO */}
+      <group position={[1.3, 0, 0]} ref={rightDoorRef}>
+        <mesh
+          position={[-0.65, 1.2, 0.05]}
           onClick={(e) => {
             e.stopPropagation()
-            setIsOpen(!isOpen)
+            setIsOpen((s) => !s)
           }}
           onPointerOver={() => document.body.style.cursor = 'pointer'}
           onPointerOut={() => document.body.style.cursor = 'default'}
+          castShadow
         >
+          <boxGeometry args={[1.3, 2.4, 0.08]} />
+          <meshStandardMaterial color={'#8B4513'} />
+        </mesh>
+
+        {/* Tay nắm cửa phải - trong cùng group nên sẽ xoay theo */}
+        <mesh position={[-1.1, 1.2, 0.1]}>
           <sphereGeometry args={[0.04]} />
           <meshStandardMaterial color={'#FFD700'} />
         </mesh>
       </group>
 
-      {/* Bậc thang cửa rộng hơn */}
+      {/* Bậc thang cửa */}
       <mesh position={[0, 0.1, 0.5]} castShadow>
         <boxGeometry args={[4.5, 0.2, 1]} />
         <meshStandardMaterial color={'#A0522D'} />
@@ -356,9 +393,9 @@ function Door({ position = [0, 1, 5] }) {
         <meshStandardMaterial color={'#8B4513'} />
       </mesh>
 
-      {/* Vùng click lớn cho dễ tương tác */}
+      {/* Vùng click ẩn cho dễ tương tác */}
       <mesh
-        position={[0.65, 1.2, 0.1]}
+        position={[0, 1.2, 0.1]}
         onClick={(e) => {
           e.stopPropagation()
           setIsOpen(!isOpen)
@@ -367,7 +404,7 @@ function Door({ position = [0, 1, 5] }) {
         onPointerOut={() => document.body.style.cursor = 'default'}
         visible={false}
       >
-        <boxGeometry args={[2, 3, 0.5]} />
+        <boxGeometry args={[2.6, 2.4, 0.5]} />
       </mesh>
     </group>
   )
@@ -405,23 +442,50 @@ export default function Museum() {
         size={[20, 4, 0.3]}
       />
 
+      {/* TƯỜNG BÍT 4 GÓC - không cho vào từ góc */}
+      {/* Góc trái sau */}
+      <mesh position={[-10, 2, -10]} castShadow>
+        <boxGeometry args={[0.5, 4, 0.5]} />
+        <meshStandardMaterial color={'#8B8B8B'} />
+      </mesh>
+      
+      {/* Góc phải sau */}
+      <mesh position={[10, 2, -10]} castShadow>
+        <boxGeometry args={[0.5, 4, 0.5]} />
+        <meshStandardMaterial color={'#8B8B8B'} />
+      </mesh>
+      
+      {/* Góc trái trước */}
+      <mesh position={[-10, 2, 10]} castShadow>
+        <boxGeometry args={[0.5, 4, 0.5]} />
+        <meshStandardMaterial color={'#8B8B8B'} />
+      </mesh>
+      
+      {/* Góc phải trước */}
+      <mesh position={[10, 2, 10]} castShadow>
+        <boxGeometry args={[0.5, 4, 0.5]} />
+        <meshStandardMaterial color={'#8B8B8B'} />
+      </mesh>
+
       {/* Tường trước với cửa - màu be */}
       <group position={[0, 0, 10]}>
-        {/* Tường bên trái cửa */}
-        <mesh position={[-6.5, 2, 0]} castShadow>
-          <boxGeometry args={[7, 4, 0.3]} />
+        {/* Tường bên trái cửa - chỉnh để khít với mép cửa (mép trái cửa tại x = -1.3) */}
+        <mesh position={[-5.65, 2, 0]} castShadow>
+          {/* width = 8.7 -> spans from x = -10 to x = -1.3 */}
+          <boxGeometry args={[8.7, 4, 0.3]} />
           <meshStandardMaterial color={'#F5F5DC'} />
         </mesh>
         
-        {/* Tường bên phải cửa */}
-        <mesh position={[6.5, 2, 0]} castShadow>
-          <boxGeometry args={[7, 4, 0.3]} />
+        {/* Tường bên phải cửa - chỉnh để khít với mép cửa (mép phải cửa tại x = 1.3) */}
+        <mesh position={[5.65, 2, 0]} castShadow>
+          {/* width = 8.7 -> spans from x = 1.3 to x = 10 */}
+          <boxGeometry args={[8.7, 4, 0.3]} />
           <meshStandardMaterial color={'#F5F5DC'} />
-        </mesh>
+  </mesh>
         
         {/* Tường trên cửa */}
         <mesh position={[0, 3, 0]} castShadow>
-          <boxGeometry args={[6, 2, 0.3]} />
+          <boxGeometry args={[2.6, 2, 0.3]} />
           <meshStandardMaterial color={'#F5F5DC'} />
         </mesh>
         

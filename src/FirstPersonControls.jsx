@@ -78,23 +78,29 @@ export default function FirstPersonControls() {
     // Keep camera at ground level (height = 1.7 for person height)
     camera.position.y = 1.7
 
-    // Simple collision with walls but allow movement through door area
+    // Simple collision with walls but allow movement through door area only when door is open
     const innerBounds = 9.5  // Inside museum
     const outerBounds = 20   // Outside area limit
     const doorArea = Math.abs(camera.position.x) < 1.5 // Door is 3 units wide, centered
-    
-    // If inside museum (z < 9.5), constrain to inner bounds but allow door exit
-    if (camera.position.z < 9.5) {
+    const doorZoneMin = 9.5
+    const doorZoneMax = 10.5
+    const doorOpen = typeof window !== 'undefined' && !!window.__DOOR_OPEN
+
+    // If inside museum (z < doorZoneMin), constrain to inner bounds
+    if (camera.position.z < doorZoneMin) {
       camera.position.x = Math.max(-innerBounds, Math.min(innerBounds, camera.position.x))
       camera.position.z = Math.max(-innerBounds, camera.position.z)
-    } 
-    // If in door area, allow free movement
-    else if (camera.position.z >= 9.5 && camera.position.z <= 10.5 && doorArea) {
-      // Allow movement through door
-      camera.position.x = Math.max(-2, Math.min(2, camera.position.x))
-    }
-    // If outside, allow wider movement but with limits
-    else {
+    } else if (camera.position.z >= doorZoneMin && camera.position.z <= doorZoneMax) {
+      // In the door frontal zone: only allow crossing if door is open and you're within door X area
+      if (doorOpen && doorArea) {
+        camera.position.x = Math.max(-2, Math.min(2, camera.position.x))
+      } else {
+        // Block crossing: push player to outside side of the door (don't allow z < doorZoneMax)
+        camera.position.z = Math.max(doorZoneMax, camera.position.z)
+        camera.position.x = Math.max(-outerBounds, Math.min(outerBounds, camera.position.x))
+      }
+    } else {
+      // Outside region: allow wider movement but within outer bounds
       camera.position.x = Math.max(-outerBounds, Math.min(outerBounds, camera.position.x))
       camera.position.z = Math.max(-outerBounds, Math.min(outerBounds, camera.position.z))
     }
