@@ -8,31 +8,33 @@ export default function App() {
   return (
     <div className="app-root">
       <Canvas 
-        shadows 
+        shadows // BẬT SHADOWS nhưng tối ưu
         camera={{ position: [0, 1.7, 18], fov: 75 }}
         gl={{
-          antialias: false, // Tắt antialiasing để tăng FPS
+          antialias: true, // BẬT antialiasing cho đẹp hơn
           powerPreference: "high-performance",
           alpha: false,
           stencil: false,
           depth: true
         }}
-        dpr={[1, 1.5]} // Giới hạn pixel ratio
-        performance={{ min: 0.5 }} // Tự động giảm chất lượng khi FPS thấp
+        dpr={[1, 1.5]} // Pixel ratio tối ưu
+        performance={{ min: 0.5 }} // Tự động điều chỉnh
       >
-        <ambientLight intensity={0.4} /> {/* Giảm intensity */}
+        <ambientLight intensity={0.5} />
         <directionalLight 
-          castShadow 
-          position={[5, 10, 5]} 
-          intensity={0.8}
-          shadow-mapSize={[1024, 1024]} // Giảm shadow resolution
-          shadow-camera-far={50}
-          shadow-camera-near={1}
-          shadow-camera-top={20}
-          shadow-camera-bottom={-20}
-          shadow-camera-left={-20}
-          shadow-camera-right={20}
+          castShadow
+          position={[10, 15, 10]} 
+          intensity={0.7}
+          shadow-mapSize={[512, 512]} // Shadow resolution thấp hơn để tăng FPS
+          shadow-camera-far={40}
+          shadow-camera-left={-15}
+          shadow-camera-right={15}
+          shadow-camera-top={15}
+          shadow-camera-bottom={-15}
+          shadow-bias={-0.0001}
         />
+        {/* Thêm đèn phụ để tạo chiều sâu */}
+        <hemisphereLight intensity={0.3} groundColor="#444444" />
         <Sky sunPosition={[100, 20, 100]} />
         <Museum />
         <FirstPersonControls />
