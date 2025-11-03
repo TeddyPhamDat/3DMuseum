@@ -1,7 +1,22 @@
 import React, { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Text } from '@react-three/drei'
+import { Text, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
+
+function VietnamFlag({ position, rotation, size = [1.2, 0.8] }) {
+  // Sử dụng texture JPG cho lá cờ Việt Nam
+  const flagTexture = useTexture('/vietnam-flag.jpg')
+  return (
+    <mesh position={position} rotation={rotation}>
+      <planeGeometry args={size} />
+      <meshStandardMaterial 
+        map={flagTexture} 
+        // color={'#DC143C'}
+        side={2}
+      />
+    </mesh>
+  )
+}
 
 function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0', size = [10, 3, 0.3] }) {
   // Extended historical revolutionary images
@@ -24,7 +39,7 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
   return (
     <group position={position} rotation={rotation}>
       {/* Tường chính */}
-      <mesh receiveShadow castShadow>
+      <mesh receiveShadow>
         <boxGeometry args={size} />
         <meshStandardMaterial color={color} />
       </mesh>
@@ -33,17 +48,17 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
       <group position={[0, 1.8, 0.5]}>
         <mesh>
           <boxGeometry args={[size[0] * 0.8, 0.1, 0.1]} />
-          <meshStandardMaterial color={'#2C2C2C'} />
+          <meshBasicMaterial color={'#2C2C2C'} />
         </mesh>
         {Array.from({length: photosPerRow}).map((_, i) => (
           <spotLight 
             key={i}
             position={[-size[0]/2 + 1.5 + i * (size[0]-3)/(photosPerRow-1), -0.3, 0]} 
             target-position={[-size[0]/2 + 1.5 + i * (size[0]-3)/(photosPerRow-1), -1.5, 0]}
-            intensity={1.2} 
+            intensity={0.8} 
             angle={Math.PI / 6}
             penumbra={0.3}
-            castShadow
+            castShadow={false} // Tắt shadow cho đèn phụ
           />
         ))}
       </group>
@@ -139,10 +154,93 @@ function Floor() {
 
 function Ceiling() {
   return (
-    <mesh position={[0, 4, 0]} rotation={[Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[20, 20]} />
-      <meshStandardMaterial color={'#F5F5DC'} />
-    </mesh>
+    <group>
+      {/* Trần chính - màu kem sang trọng */}
+      <mesh position={[0, 4, 0]} rotation={[Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[22, 22]} />
+        <meshStandardMaterial color={'#FFF8DC'} roughness={0.3} metalness={0.1} />
+      </mesh>
+      
+      {/* Khung trang trí trần - hình chữ nhật */}
+      <mesh position={[0, 3.95, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[8, 9, 4]} />
+        <meshStandardMaterial color={'#D4AF37'} metalness={0.8} roughness={0.2} />
+      </mesh>
+      
+      {/* Đèn chùm trung tâm */}
+      <group position={[0, 3.5, 0]}>
+        {/* Thân đèn chùm chính */}
+        {/* <mesh position={[0, 0, 0]}>
+          <cylinderGeometry args={[0.15, 0.1, 0.4]} />
+          <meshStandardMaterial color={'#B8860B'} metalness={0.9} roughness={0.1} />
+        </mesh> */}
+        
+        {/* Chụp đèn tròn */}
+        <mesh position={[0, -0.3, 0]}>
+          <sphereGeometry args={[0.8, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
+          <meshPhysicalMaterial 
+            color={'#FFFAF0'} 
+            transparent 
+            opacity={0.9}
+            transmission={0.1}
+            roughness={0.1}
+            metalness={0.0}
+          />
+        </mesh>
+        
+        {/* Các bóng đèn nhỏ xung quanh */}
+        {Array.from({length: 6}).map((_, i) => {
+          const angle = (i / 6) * Math.PI * 2
+          const x = Math.cos(angle) * 0.6
+          const z = Math.sin(angle) * 0.6
+          return (
+            <group key={i} position={[x, -0.4, z]}>
+              <mesh>
+                <sphereGeometry args={[0.08]} />
+                <meshStandardMaterial 
+                  color={'#FFFACD'} 
+                  emissive={'#FFFACD'} 
+                  emissiveIntensity={0.3} 
+                />
+              </mesh>
+              {/* Dây treo */}
+              <mesh position={[0, 0.2, 0]}>
+                <cylinderGeometry args={[0.005, 0.005, 0.4]} />
+                <meshStandardMaterial color={'#8B4513'} />
+              </mesh>
+            </group>
+          )
+        })}
+        
+        {/* Ánh sáng từ đèn chùm */}
+        <pointLight 
+          position={[0, -0.5, 0]} 
+          intensity={1.2} 
+          color="#FFFAF0"
+          castShadow={false}
+          distance={15}
+          decay={2}
+        />
+      </group>
+      
+      // ...existing code...
+      
+      {/* Hoa văn trang trí 4 góc */}
+      {[
+        [-8, 0, -8], [8, 0, -8], [-8, 0, 8], [8, 0, 8]
+      ].map((pos, i) => (
+        <group key={i} position={[pos[0], 3.92, pos[2]]}>
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <ringGeometry args={[0.3, 0.6, 8]} />
+            <meshStandardMaterial color={'#CD853F'} metalness={0.6} roughness={0.3} />
+          </mesh>
+          <mesh rotation={[Math.PI / 2, 0, Math.PI/4]}>
+            <ringGeometry args={[0.1, 0.4, 4]} />
+            <meshStandardMaterial color={'#D4AF37'} metalness={0.8} roughness={0.2} />
+          </mesh>
+        </group>
+      ))}
+    </group>
   )
 }
 
@@ -310,7 +408,17 @@ function VintageVehicle({ position = [0, 0, 0] }) {
           <planeGeometry args={[0.5, 0.2]} />
           <meshStandardMaterial color={'#FFFFFF'} />
         </mesh>
-       
+        <Text
+          position={[-1.75, 0.6, 0.11]}
+          rotation={[0, Math.PI/2, 0]}
+          fontSize={0.08}
+          color="#000000"
+          anchorX="center"
+          anchorY="middle"
+          fontWeight="bold"
+        >
+          SP307BW
+        </Text>
         <mesh position={[-1.75, 1.0, 0.35]} castShadow rotation={[0, 0, Math.PI/2]}>
           <cylinderGeometry args={[0.12, 0.12, 0.1]} />
           <meshStandardMaterial color={'#FFFACD'} emissive={'#FFFACD'} emissiveIntensity={0.3} />
@@ -356,14 +464,14 @@ function VintageVehicle({ position = [0, 0, 0] }) {
         <meshStandardMaterial color={'#C0C0C0'} metalness={0.8} />
       </mesh>
 
-      {/* Đèn chiếu sáng cho xe */}
+      {/* Đèn chiếu sáng cho xe - TỐI ƯU HIỆU NĂNG */}
       <spotLight 
         position={[0, 4, 3]} 
         target-position={[0, 0, 0]}
-        intensity={2} 
+        intensity={1.5} 
         angle={Math.PI / 3}
         penumbra={0.3}
-        castShadow
+        castShadow={false}
       />
 
       {/* Bảng thông tin xe - ĐẶT NGOÀI KHU VỰC DÂY CHẮN PHÍA TRƯỚC XE */}
@@ -407,85 +515,162 @@ function VintageVehicle({ position = [0, 0, 0] }) {
 }
 
 function DisplayCase({ position, artifactType }) {
+  const flagTexture = useTexture('/vietnam-flag.jpg')
+  
   const artifacts = {
     weapon: { 
-      color: '#8B4513', 
-      name: 'Súng K54 - Vũ khí cách mạng',
-      shape: 'rifle'
+      name: 'Súng K54 - Vũ khí cách mạng Việt Nam',
+      description: 'Súng lục Tokarev TT-33 do Liên Xô sản xuất'
     },
     helmet: { 
-      color: '#2F4F4F', 
-      name: 'Nón cối - Biểu tượng bộ đội',
-      shape: 'helmet'
+      name: 'Nón cối Quân đội Nhân dân Việt Nam',
+      description: 'Mũ cối bộ đội thời kháng chiến chống Mỹ'
     },
     flag: { 
-      color: '#DC143C', 
-      name: 'Cờ Đảng - Ngôi sao vàng',
-      shape: 'flag'
+      name: 'Cờ đỏ sao vàng - Quốc kỳ Việt Nam',
+      description: 'Lá cờ được sử dụng trong các trận đánh lịch sử'
     },
-    book: { 
-      color: '#8B0000', 
-      name: 'Tác phẩm Hồ Chí Minh toàn tập',
-      shape: 'book'
+    medal: { 
+      name: 'Huân chương Sao Vàng - Huân chương cao quý nhất',
+      description: 'Huân chương được trao cho những công trần xuất sắc'
     }
   }
   
   const artifact = artifacts[artifactType] || artifacts.weapon
 
   const renderArtifact = () => {
-    switch(artifact.shape) {
-      case 'rifle':
+    switch(artifactType) {
+      case 'weapon':
         return (
-          <group>
+          <group rotation={[0, Math.PI/4, 0]}>
+            {/* Thân súng chính */}
             <mesh position={[0, 0, 0]}>
-              <boxGeometry args={[0.8, 0.05, 0.05]} />
-              <meshStandardMaterial color={artifact.color} />
+              <boxGeometry args={[0.9, 0.08, 0.08]} />
+              <meshStandardMaterial color={'#2C2C2C'} metalness={0.8} roughness={0.2} />
             </mesh>
-            <mesh position={[0.25, 0, 0]}>
-              <boxGeometry args={[0.3, 0.1, 0.05]} />
-              <meshStandardMaterial color={'#654321'} />
+            
+            {/* Báng súng */}
+            <mesh position={[0.35, -0.06, 0]}>
+              <boxGeometry args={[0.4, 0.16, 0.08]} />
+              <meshStandardMaterial color={'#654321'} metalness={0.3} roughness={0.8} />
+            </mesh>
+            
+            {/* Nòng súng */}
+            <mesh position={[-0.45, 0, 0]} rotation={[0, 0, Math.PI/2]}>
+              <cylinderGeometry args={[0.015, 0.015, 0.3]} />
+              <meshStandardMaterial color={'#1C1C1C'} metalness={0.9} roughness={0.1} />
+            </mesh>
+            
+            {/* Cò súng */}
+            <mesh position={[0.1, -0.05, 0]}>
+              <boxGeometry args={[0.03, 0.06, 0.02]} />
+              <meshStandardMaterial color={'#2C2C2C'} metalness={0.7} />
+            </mesh>
+            
+            {/* Kính ngắm */}
+            <mesh position={[-0.1, 0.05, 0]}>
+              <boxGeometry args={[0.1, 0.03, 0.03]} />
+              <meshStandardMaterial color={'#2C2C2C'} metalness={0.8} />
             </mesh>
           </group>
         )
+        
       case 'helmet':
         return (
-          <mesh position={[0, 0, 0]}>
-            <sphereGeometry args={[0.15, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
-            <meshStandardMaterial color={artifact.color} />
-          </mesh>
+          <group>
+            {/* Nón cối chính */}
+            <mesh position={[0, 0, 0]}>
+              <sphereGeometry args={[0.18, 32, 24, 0, Math.PI * 2, 0, Math.PI * 0.6]} />
+              <meshStandardMaterial color={'#3A5F2D'} metalness={0.1} roughness={0.9} />
+            </mesh>
+            
+            {/* Vành nón */}
+            <mesh position={[0, -0.12, 0]} rotation={[Math.PI/2, 0, 0]}>
+              <torusGeometry args={[0.19, 0.02, 8, 32]} />
+              <meshStandardMaterial color={'#2D4A20'} metalness={0.1} roughness={0.9} />
+            </mesh>
+            
+            {/* Quai cằm */}
+            <mesh position={[0.12, -0.14, 0]} rotation={[0, 0, Math.PI/4]}>
+              <cylinderGeometry args={[0.008, 0.008, 0.15]} />
+              <meshStandardMaterial color={'#4A4A4A'} />
+            </mesh>
+            <mesh position={[-0.12, -0.14, 0]} rotation={[0, 0, -Math.PI/4]}>
+              <cylinderGeometry args={[0.008, 0.008, 0.15]} />
+              <meshStandardMaterial color={'#4A4A4A'} />
+            </mesh>
+            
+
+          </group>
         )
+        
       case 'flag':
         return (
           <group>
+            {/* Lá cờ với texture thật */}
             <mesh position={[0, 0.1, 0]}>
-              <planeGeometry args={[0.4, 0.3]} />
-              <meshStandardMaterial color={artifact.color} />
+              <planeGeometry args={[0.5, 0.35]} />
+              <meshStandardMaterial map={flagTexture} side={2} />
             </mesh>
-            <mesh position={[0, 0.05, 0]}>
-              <sphereGeometry args={[0.03]} />
-              <meshStandardMaterial color={'#FFD700'} />
-            </mesh>
-            <mesh position={[-0.15, 0, 0]}>
-              <cylinderGeometry args={[0.005, 0.005, 0.3]} />
-              <meshStandardMaterial color={'#8B4513'} />
-            </mesh>
+            
+           
           </group>
         )
-      case 'book':
+        
+      case 'medal':
         return (
           <group>
-            <mesh position={[0, 0, 0]}>
-              <boxGeometry args={[0.25, 0.35, 0.05]} />
-              <meshStandardMaterial color={artifact.color} />
+            {/* Huy chương chính - đứng thẳng */}
+            <mesh position={[0, 0.1, 0]} rotation={[Math.PI/2, 0, 0]}>
+              <cylinderGeometry args={[0.15, 0.15, 0.03, 32]} />
+              <meshStandardMaterial color={'#FFD700'} metalness={0.9} roughness={0.1} emissive={'#FFD700'} emissiveIntensity={0.2} />
             </mesh>
-            <mesh position={[0, 0, 0.026]}>
-              <planeGeometry args={[0.2, 0.3]} />
-              <meshStandardMaterial color={'#FFD700'} />
+            
+            {/* Ngôi sao giữa huy chương - đứng thẳng */}
+            <mesh position={[0, 0.1, 0.02]} rotation={[Math.PI/2, 0, 0]}>
+              <cylinderGeometry args={[0.08, 0.08, 0.015, 5]} />
+               <meshStandardMaterial map={flagTexture} side={3} />
+            </mesh>
+            
+            {/* Dải ruy băng đỏ - treo từ trên xuống */}
+            <mesh position={[0, 0.28, 0]}>
+              <boxGeometry args={[0.12, 0.25, 0.02]} />
+              <meshStandardMaterial color={'#DC143C'} />
+            </mesh>
+            
+            {/* Khoen treo - nằm ngang */}
+            <mesh position={[0, 0.42, 0]} rotation={[0, 0, 0]}>
+              <torusGeometry args={[0.04, 0.012, 8, 16]} />
+              <meshStandardMaterial color={'#DAA520'} metalness={0.8} />
+            </mesh>
+            
+            {/* Viền huy chương - đứng thẳng */}
+            <mesh position={[0, 0.1, 0]} rotation={[0, 0, 0]}>
+              <torusGeometry args={[0.15, 0.015, 8, 32]} />
+              <meshStandardMaterial color={'#B8860B'} metalness={0.9} roughness={0.1} />
+            </mesh>
+            
+            {/* Nền đỏ cho sao - đứng thẳng */}
+            <mesh position={[0, 0.1, 0.015]} rotation={[Math.PI/2, 0, 0]}>
+              <cylinderGeometry args={[0.10, 0.10, 0.008, 32]} />
+              <meshStandardMaterial color={'#8B0000'} metalness={0.3} roughness={0.7} />
+            </mesh>
+            
+            {/* Điểm nhấn vàng quanh sao - đứng thẳng */}
+            <mesh position={[0, 0.1, 0.025]} rotation={[0, 0, 0]}>
+              <torusGeometry args={[0.08, 0.008, 8, 16]} />
+              <meshStandardMaterial color={'#FFD700'} metalness={0.9} roughness={0.1} />
             </mesh>
           </group>
         )
+        
       default:
-        return <mesh><boxGeometry args={[0.3, 0.2, 0.6]} /><meshStandardMaterial color={artifact.color} /></mesh>
+        return (
+          <mesh>
+            <boxGeometry args={[0.3, 0.2, 0.6]} />
+            <meshStandardMaterial color={'#8B4513'} />
+          </mesh>
+        )
     }
   }
 
@@ -700,9 +885,9 @@ export default function Museum() {
       <Floor />
       <Ceiling />
 
-      {/* Ánh sáng tổng thể cho bảo tàng */}
-      <ambientLight intensity={0.3} />
-      <pointLight position={[0, 3.5, 0]} intensity={1} color="#FFFFFF" />
+      {/* Ánh sáng tổng thể cho bảo tàng - TỐI ƯU */}
+      <ambientLight intensity={0.2} />
+      <pointLight position={[0, 3.5, 0]} intensity={0.7} color="#FFFFFF" />
       
       {/* Tường sau - màu tím nhạt */}
       <Wall 
@@ -753,6 +938,121 @@ export default function Museum() {
       {/* Bảng hiệu bảo tàng */}
       <MuseumSign />
 
+      {/* Trang trí mặt tiền - Lịch sử Đảng */}
+      <group position={[0, 0, 12]}>
+        // ...existing code...
+
+        {/* Cột cờ bên trái */}
+        <mesh position={[-8, 2.5, 2]} castShadow>
+          <cylinderGeometry args={[0.06, 0.06, 5]} />
+          <meshStandardMaterial color={'#8B4513'} />
+        </mesh>
+        
+        {/* Cờ Việt Nam bên trái với texture */}
+        <VietnamFlag 
+          position={[-7.2, 4, 2]} 
+          rotation={[0, 0, 0.05]} 
+          size={[1.2, 0.8]} 
+        />
+        
+        {/* Ngôi sao vàng trên cờ VN bên trái - backup */}
+        {/* <mesh position={[-7.18, 4, 2.01]} rotation={[0, 0, 0.05]}>
+          <cylinderGeometry args={[0.15, 0.15, 0.02, 5]} />
+          <meshStandardMaterial color={'#FFD700'} emissive={'#FFD700'} emissiveIntensity={0.3} />
+        </mesh> */}
+
+        {/* Cột cờ bên phải */}
+        <mesh position={[8, 2.5, 2]} castShadow>
+          <cylinderGeometry args={[0.06, 0.06, 5]} />
+          <meshStandardMaterial color={'#8B4513'} />
+        </mesh>
+        
+        {/* Cờ Việt Nam bên phải với texture */}
+        <VietnamFlag 
+          position={[7.2, 4, 2]} 
+          rotation={[0, 0, -0.05]} 
+          size={[1.2, 0.8]} 
+        />
+        
+        {/* Ngôi sao vàng trên cờ VN bên phải - backup */}
+        {/* <mesh position={[7.22, 4, 2.01]} rotation={[0, 0, -0.05]}>
+          <cylinderGeometry args={[0.15, 0.15, 0.02, 5]} />
+          <meshStandardMaterial color={'#FFD700'} emissive={'#FFD700'} emissiveIntensity={0.3} />
+        </mesh> */}
+
+        {/* Bảng khẩu hiệu cách mạng trái */}
+        <mesh position={[-6, 1.5, 1]} rotation={[0, Math.PI/6, 0]}>
+          <planeGeometry args={[2.5, 0.8]} />
+          <meshStandardMaterial color={'#8B0000'} />
+        </mesh>
+        <Text
+          position={[-6, 1.5, 1.01]}
+          rotation={[0, Math.PI/6, 0]}
+          fontSize={0.12}
+          color="#FFD700"
+          anchorX="center"
+          anchorY="middle"
+          fontWeight="bold"
+          maxWidth={2.3}
+        >
+          ĐẢNG CỘNG SAN VIỆT NAM
+          QUANG VINH - VĨ ĐẠI
+        </Text>
+
+        {/* Bảng khẩu hiệu cách mạng phải */}
+        <mesh position={[6, 1.5, 1]} rotation={[0, -Math.PI/6, 0]}>
+          <planeGeometry args={[2.5, 0.8]} />
+          <meshStandardMaterial color={'#8B0000'} />
+        </mesh>
+        <Text
+          position={[6, 1.5, 1.01]}
+          rotation={[0, -Math.PI/6, 0]}
+          fontSize={0.12}
+          color="#FFD700"
+          anchorX="center"
+          anchorY="middle"
+          fontWeight="bold"
+          maxWidth={2.3}
+        >
+          LÃNH ĐẠO CÁCH MẠNG
+          GIẢI PHÓNG DÂN TỘC
+        </Text>
+
+
+
+        {/* Đèn chiếu sáng cờ */}
+        <spotLight 
+          position={[0, 8, 2]} 
+          target-position={[0, 7, 0]}
+          intensity={2} 
+          angle={Math.PI / 6}
+          penumbra={0.3}
+          color="#FFD700"
+          castShadow={false}
+        />
+        
+        {/* Đèn chiếu sáng mặt tiền */}
+        <spotLight 
+          position={[-5, 4, 3]} 
+          target-position={[0, 2, 0]}
+          intensity={1.5} 
+          angle={Math.PI / 4}
+          penumbra={0.5}
+          color="#FFFFFF"
+          castShadow={false}
+        />
+        
+        <spotLight 
+          position={[5, 4, 3]} 
+          target-position={[0, 2, 0]}
+          intensity={1.5} 
+          angle={Math.PI / 4}
+          penumbra={0.5}
+          color="#FFFFFF"
+          castShadow={false}
+        />
+      </group>
+
       {/* Xe cổ quân sự - đặt ở trung tâm */}
       <VintageVehicle position={[0, 0, -3]} />
 
@@ -760,18 +1060,9 @@ export default function Museum() {
       <DisplayCase position={[6, 0, -6]} artifactType="weapon" />
       <DisplayCase position={[-6, 0, 6]} artifactType="helmet" />
       <DisplayCase position={[6, 0, 6]} artifactType="flag" />
-      <DisplayCase position={[-6, 0, -6]} artifactType="book" />
+      <DisplayCase position={[-6, 0, -6]} artifactType="medal" />
 
-      {/* Cột trang trí bên ngoài */}
-      <mesh position={[5, 1, 12]} castShadow>
-        <cylinderGeometry args={[0.3, 0.3, 2]} />
-        <meshStandardMaterial color={'#708090'} />
-      </mesh>
-
-      <mesh position={[-5, 1, 12]} castShadow>
-        <cylinderGeometry args={[0.3, 0.3, 2]} />
-        <meshStandardMaterial color={'#708090'} />
-      </mesh>
+  // ...existing code...
     </>
   )
 }

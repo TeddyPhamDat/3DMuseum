@@ -1,7 +1,35 @@
-html, body, #root, .app-root { height: 100%; margin: 0; }
-body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
-.app-root { width: 100vw; height: 100vh; overflow: hidden; position: relative; }
-canvas { display: block; }
+html, body, #root, .app-root { 
+  height: 100%; 
+  margin: 0; 
+  /* Tối ưu hiệu năng */
+  will-change: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+body { 
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; 
+  /* Tắt smooth scrolling để tăng hiệu năng */
+  scroll-behavior: auto;
+}
+
+.app-root { 
+  width: 100vw; 
+  height: 100vh; 
+  overflow: hidden; 
+  position: relative;
+  /* GPU acceleration */
+  transform: translate3d(0, 0, 0);
+}
+
+canvas { 
+  display: block;
+  /* Tối ưu rendering */
+  image-rendering: optimizeSpeed;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+}
+
 .ui { 
   position: absolute; 
   top: 12px; 
@@ -12,13 +40,47 @@ canvas { display: block; }
   border-radius: 8px; 
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   max-width: 280px;
+  /* Tối ưu composite layer */
+  will-change: transform;
+  transform: translateZ(0);
+  pointer-events: none; /* Không cản trở chuột */
 }
-.ui h1 { margin: 0 0 8px 0; font-size: 16px; font-weight: 600; }
-.ui p { margin: 0 0 8px 0; font-size: 13px; line-height: 1.4; }
+
+.ui h1 { 
+  margin: 0 0 8px 0; 
+  font-size: 16px; 
+  font-weight: 600; 
+}
+
+.ui p { 
+  margin: 0 0 8px 0; 
+  font-size: 13px; 
+  line-height: 1.4; 
+}
+
 .controls { 
   background: rgba(0,0,0,0.05); 
   padding: 6px 8px; 
   border-radius: 4px; 
   margin-top: 4px; 
 }
-.controls small { font-size: 11px; color: #666; }
+
+.controls small { 
+  font-size: 11px; 
+  color: #666; 
+}
+
+/* Performance optimizations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Giảm motion cho thiết bị yếu */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
