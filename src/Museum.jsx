@@ -1141,7 +1141,7 @@ export default function Museum() {
           fontWeight="bold"
           maxWidth={2.3}
         >
-          ĐẢNG CỘNG SAN VIỆT NAM
+          ĐẢNG CỘNG SẢN VIỆT NAM
           QUANG VINH - VĨ ĐẠI
         </Text>
 
