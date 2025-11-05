@@ -1,115 +1,104 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useMemo, memo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Text, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 
-function VietnamFlag({ position, rotation, size = [1.2, 0.8] }) {
-  // Sử dụng texture JPG cho lá cờ Việt Nam
+const VietnamFlag = memo(({ position, rotation, size = [1.2, 0.8] }) => {
   const flagTexture = useTexture('/vietnam-flag.jpg')
   return (
     <mesh position={position} rotation={rotation}>
       <planeGeometry args={size} />
-      <meshStandardMaterial 
+      <meshBasicMaterial 
         map={flagTexture} 
-        // color={'#DC143C'}
         side={2}
       />
     </mesh>
   )
-}
+})
 
-function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0', size = [10, 3, 0.3], startIndex = 0, count = 11 }) {
-  // Extended historical revolutionary images
-  const historicalEvents = [
-    { 
-      year: '1930', 
-      event: 'Thành lập Đảng Cộng sản Việt Nam', 
-      image: '/1930.png',
-      description: 'Ngày 3/2/1930, tại Hương Cảng (Trung Quốc), Nguyễn Ái Quốc chủ trì Hội nghị hợp nhất các tổ chức cộng sản trong nước thành Đảng Cộng sản Việt Nam.'
-    },
-    { 
-      year: '1945', 
-      event: 'Bác Hồ đọc Bảng Tuyên Ngôn Độc Lập', 
-      image: '/1945.png',
-      description: 'Ngày 2/9/1945, tại Quảng trường Ba Đình, Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập, khai sinh nước Việt Nam Dân chủ Cộng hòa.'
-    },
-    { 
-      year: '1951', 
-      event: 'Đại hội đảng lần thứ II', 
-      image: '/1951.png',
-      description: 'Đại hội lần thứ II của Đảng họp từ 11-19/2/1951 tại Tuyên Quang, chính thức lấy tên là Đảng Lao động Việt Nam.'
-    },
-    { 
-      year: '1954', 
-      event: 'Chiến thắng Điện Biên Phủ', 
-      image: '/1954.png',
-      description: 'Chiến thắng lịch sử Điện Biên Phủ ngày 7/5/1954 đã lập nên chiến công vang dội, buộc thực dân Pháp phải ký Hiệp định Genève.'
-    },
-    { 
-      year: '1960', 
-      event: 'Đại hội đảng lần thứ III', 
-      image: '/1960.png',
-      description: 'Đại hội lần thứ III họp từ 5-10/9/1960 tại Hà Nội, đề ra đường lối xây dựng chủ nghĩa xã hội ở miền Bắc và giải phóng miền Nam.'
-    },
-    { 
-      year: '1975', 
-      event: 'Giải phóng miền Nam thống nhất Đất nước', 
-      image: '/1975.png',
-      description: 'Ngày 30/4/1975, chiến dịch Hồ Chí Minh thắng lợi hoàn toàn, giải phóng miền Nam, thống nhất đất nước, kết thúc 21 năm chia cắt.'
-    },
-    { 
-      year: '1976', 
-      event: 'Đại hội đảng lần thứ IV', 
-      image: '/1976.png',
-      description: 'Đại hội lần thứ IV họp từ 14-20/12/1976, là Đại hội Đảng thống nhất toàn quốc sau khi đất nước hoàn toàn độc lập và thống nhất.'
-    },
-    { 
-      year: '1986', 
-      event: 'Đại hội đảng lần thứ VI', 
-      image: '/1986.png',
-      description: 'Đại hội lần thứ VI họp từ 15-18/12/1986, khởi xướng công cuộc Đổi mới toàn diện đất nước, mở ra thời kỳ phát triển mới.'
-    },
-    { 
-      year: '1991', 
-      event: 'Đại hội đảng lần thứ VII', 
-      image: '/1991.png',
-      description: 'Đại hội lần thứ VII họp từ 24-27/6/1991, tiềp tục đẩy mạnh công cuộc đổi mới, phát triển kinh tế thị trường định hướng xã hội chủ nghĩa.'
-    },
-    { 
-      year: '2011', 
-      event: 'Đại hội đảng lần thứ XI', 
-      image: '/2011.png',
-      description: 'Đại hội lần thứ XI họp từ 12-19/1/2011, đề ra mục tiêu phấn đấu đến năm 2020 nước ta cơ bản trở thành nước công nghiệp.'
-    },
-    { 
-      year: '2021', 
-      event: 'Đại hội đảng lần thứ XIII', 
-      image: '/2021.png',
-      description: 'Đại hội lần thứ XIII họp từ 25/1-2/2/2021, vạch ra phương hướng phát triển đất nước trong giai đoạn mới, hướng tới thịnh vượng.'
-    },
-  ]
+// Pre-load textures once outside component
+const WALL_TEXTURES = [
+  '/1930.png',
+  '/1945.png',
+  '/1951.png',
+  '/1954.png',
+  '/1960.png',
+  '/1975.png',
+  '/1976.png',
+  '/1986.png',
+  '/1991.png',
+  '/2011.png',
+  '/2021.png',
+]
 
-  // Load all textures
-  const textures = useTexture([
-    '/1930.png',
-    '/1945.png',
-    '/1951.png',
-    '/1954.png',
-    '/1960.png',
-    '/1975.png',
-    '/1976.png',
-    '/1986.png',
-    '/1991.png',
-    '/2011.png',
-    '/2021.png',
-  ])
+const HISTORICAL_EVENTS = [
+  { 
+    year: '1930', 
+    event: 'Thành lập Đảng Cộng sản Việt Nam', 
+    description: 'Ngày 3/2/1930, tại Hương Cảng (Trung Quốc), Nguyễn Ái Quốc chủ trì Hội nghị hợp nhất các tổ chức cộng sản trong nước thành Đảng Cộng sản Việt Nam.'
+  },
+  { 
+    year: '1945', 
+    event: 'Bác Hồ đọc Bảng Tuyên Ngôn Độc Lập', 
+    description: 'Ngày 2/9/1945, tại Quảng trường Ba Đình, Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập, khai sinh nước Việt Nam Dân chủ Cộng hòa.'
+  },
+  { 
+    year: '1951', 
+    event: 'Đại hội đảng lần thứ II', 
+    description: 'Đại hội lần thứ II của Đảng họp từ 11-19/2/1951 tại Tuyên Quang, chính thức lấy tên là Đảng Lao động Việt Nam.'
+  },
+  { 
+    year: '1954', 
+    event: 'Chiến thắng Điện Biên Phủ', 
+    description: 'Chiến thắng lịch sử Điện Biên Phủ ngày 7/5/1954 đã lập nên chiến công vang dội, buộc thực dân Pháp phải ký Hiệp định Genève.'
+  },
+  { 
+    year: '1960', 
+    event: 'Đại hội đảng lần thứ III', 
+    description: 'Đại hội lần thứ III họp từ 5-10/9/1960 tại Hà Nội, đề ra đường lối xây dựng chủ nghĩa xã hội ở miền Bắc và giải phóng miền Nam.'
+  },
+  { 
+    year: '1975', 
+    event: 'Giải phóng miền Nam thống nhất Đất nước', 
+    description: 'Ngày 30/4/1975, chiến dịch Hồ Chí Minh thắng lợi hoàn toàn, giải phóng miền Nam, thống nhất đất nước, kết thúc 21 năm chia cắt.'
+  },
+  { 
+    year: '1976', 
+    event: 'Đại hội đảng lần thứ IV', 
+    description: 'Đại hội lần thứ IV họp từ 14-20/12/1976, là Đại hội Đảng thống nhất toàn quốc sau khi đất nước hoàn toàn độc lập và thống nhất.'
+  },
+  { 
+    year: '1986', 
+    event: 'Đại hội đảng lần thứ VI', 
+    description: 'Đại hội lần thứ VI họp từ 15-18/12/1986, khởi xướng công cuộc Đổi mới toàn diện đất nước, mở ra thời kỳ phát triển mới.'
+  },
+  { 
+    year: '1991', 
+    event: 'Đại hội đảng lần thứ VII', 
+    description: 'Đại hội lần thứ VII họp từ 24-27/6/1991, tiềp tục đẩy mạnh công cuộc đổi mới, phát triển kinh tế thị trường định hướng xã hội chủ nghĩa.'
+  },
+  { 
+    year: '2011', 
+    event: 'Đại hội đảng lần thứ XI', 
+    description: 'Đại hội lần thứ XI họp từ 12-19/1/2011, đề ra mục tiêu phấn đấu đến năm 2020 nước ta cơ bản trở thành nước công nghiệp.'
+  },
+  { 
+    year: '2021', 
+    event: 'Đại hội đảng lần thứ XIII', 
+    description: 'Đại hội lần thứ XIII họp từ 25/1-2/2/2021, vạch ra phương hướng phát triển đất nước trong giai đoạn mới, hướng tới thịnh vượng.'
+  },
+]
+
+const Wall = memo(({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0', size = [10, 3, 0.3], startIndex = 0, count = 11 }) => {
+  // Load all textures ONCE
+  const textures = useTexture(WALL_TEXTURES)
 
   // Get pictures for this wall
-  const wallEvents = historicalEvents.slice(startIndex, startIndex + count)
+  const wallEvents = HISTORICAL_EVENTS.slice(startIndex, startIndex + count)
   
-  // CHIỀU NGANG - 1 hàng duy nhất
-  const pictureWidth = 2.0 // Chiều rộng của mỗi khung ảnh
-  const pictureSpacing = 0.3 // Khoảng cách giữa các ảnh
+  // CHIỀU NGANG - 1 hàng duy nhất với khoảng cách tối ưu
+  const pictureWidth = 1.8 // Chiều rộng của mỗi khung ảnh - giảm nhẹ để tạo không gian
+  const pictureSpacing = 1.2 // Khoảng cách giữa các ảnh - TĂNG ĐỀ THOÁNG ĐẸP
   const totalPictureWidth = pictureWidth + pictureSpacing
   
   return (
@@ -120,14 +109,7 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
         <meshStandardMaterial color={color} roughness={0.8} />
       </mesh>
 
-      {/* Đèn spotlight nhẹ cho các khung tranh */}
-      <pointLight 
-        position={[0, 0, 0.8]} 
-        intensity={0.5}
-        distance={8}
-        decay={2}
-        color="#FFF8DC"
-      />
+      {/* Removed point light - using global lighting instead for better performance */}
 
       {/* Khung ảnh lịch sử - 1 HÀNG NGANG */}
       {wallEvents.map((event, i) => {
@@ -141,27 +123,31 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
         
         return (
           <group key={i} position={[xPosition, yPosition, size[2]/2 + 0.01]}>
-            {/* Khung tranh gỗ với chất liệu đẹp */}
-            <mesh castShadow>
-              <planeGeometry args={[pictureWidth, 1.8]} />
+            {/* Khung tranh gỗ với chất liệu đẹp - điều chỉnh kích thước */}
+            <mesh castShadow receiveShadow>
+              <planeGeometry args={[pictureWidth, 1.7]} />
               <meshStandardMaterial 
                 color={'#654321'} 
-                roughness={0.7}
-                metalness={0.1}
+                roughness={0.8}
+                metalness={0.05}
               />
             </mesh>
-            {/* Ảnh lịch sử */}
-            <mesh position={[0, 0, 0.01]} castShadow>
-              <planeGeometry args={[1.8, 1.5]} />
+            {/* Ảnh lịch sử - điều chỉnh tỷ lệ phù hợp với khung nhỏ hơn */}
+            <mesh position={[0, 0.05, 0.01]} castShadow receiveShadow>
+              <planeGeometry args={[pictureWidth * 0.9, 1.35]} />
               <meshStandardMaterial 
                 map={textures[startIndex + i]}
-                roughness={0.6}
+                roughness={0.7}
               />
             </mesh>
-            {/* Năm */}
+            {/* Năm - với nền đẹp hơn */}
+            <mesh position={[0, -0.5, 0.015]}>
+              <planeGeometry args={[0.7, 0.22]} />
+              <meshStandardMaterial color={'#8B0000'} />
+            </mesh>
             <Text
-              position={[0, -0.55, 0.02]}
-              fontSize={0.12}
+              position={[0, -0.5, 0.02]}
+              fontSize={0.11}
               color="#FFD700"
               anchorX="center"
               anchorY="middle"
@@ -169,18 +155,18 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
             >
               {event.year}
             </Text>
-            {/* Bảng tên sự kiện */}
-            <mesh position={[0, -0.95, 0.01]}>
-              <planeGeometry args={[pictureWidth, 0.6]} />
-              <meshStandardMaterial color={'#1C1C1C'} />
+            {/* Bảng tên sự kiện - nhỏ gọn hơn */}
+            <mesh position={[0, -0.9, 0.01]}>
+              <planeGeometry args={[pictureWidth, 0.55]} />
+              <meshStandardMaterial color={'#8B0000'} />
             </mesh>
             <Text
-              position={[0, -0.95, 0.02]}
-              fontSize={0.06}
+              position={[0, -0.9, 0.02]}
+              fontSize={0.055}
               color="#FFD700"
               anchorX="center"
               anchorY="middle"
-              maxWidth={1.9}
+              maxWidth={pictureWidth * 0.95}
               fontWeight="bold"
             >
               {event.event}
@@ -190,9 +176,9 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
       })}
     </group>
   )
-}
+})
 
-function Floor() {
+const Floor = memo(() => {
   return (
     <>
       {/* Sàn chính (cỏ xanh) - mở rộng */}
@@ -200,7 +186,7 @@ function Floor() {
         <planeGeometry args={[40, 40]} />
         <meshStandardMaterial 
           color={'#228B22'} 
-          roughness={0.9}
+          roughness={0.95}
         />
       </mesh>
       
@@ -209,7 +195,7 @@ function Floor() {
         <planeGeometry args={[5, 8]} />
         <meshStandardMaterial 
           color={'#696969'}
-          roughness={0.7}
+          roughness={0.8}
         />
       </mesh>
       
@@ -218,23 +204,24 @@ function Floor() {
         <planeGeometry args={[22, 22]} />
         <meshStandardMaterial 
           color={'#F5F5DC'} 
-          roughness={0.2}
-          metalness={0.05}
+          roughness={0.3}
+          metalness={0.08}
         />
       </mesh>
     </>
   )
-}
+})
 
-function Ceiling() {
+const Ceiling = memo(() => {
   return (
     <group>
       {/* Trần chính - màu kem sang trọng */}
-      <mesh position={[0, 4, 0]} rotation={[Math.PI / 2, 0, 0]}>
+      <mesh position={[0, 4, 0]} rotation={[Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[22, 22]} />
         <meshStandardMaterial 
           color={'#FFF8DC'} 
-          roughness={0.4}
+          roughness={0.5}
+          metalness={0.02}
         />
       </mesh>
       
@@ -242,75 +229,47 @@ function Ceiling() {
       <mesh position={[0, 3.95, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <ringGeometry args={[8, 9, 4]} />
         <meshStandardMaterial 
-          color={'#D4AF37'} 
-          metalness={0.7}
-          roughness={0.3}
+          color={'#D4AF37'}
+          metalness={0.6}
+          roughness={0.4}
         />
       </mesh>
       
-      {/* Đèn chùm trung tâm đẹp hơn */}
+      {/* Đèn chùm trung tâm - simplified for performance */}
       <group position={[0, 3.5, 0]}>
         {/* Chụp đèn tròn */}
         <mesh position={[0, -0.3, 0]}>
-          <sphereGeometry args={[0.8, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
+          <sphereGeometry args={[0.8, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2]} />
           <meshStandardMaterial 
             color={'#FFFAF0'} 
             transparent 
             opacity={0.8}
-            roughness={0.2}
+            roughness={0.3}
             metalness={0.1}
+            emissive={'#FFFACD'}
+            emissiveIntensity={0.2}
           />
         </mesh>
-        
-        {/* Các bóng đèn nhỏ xung quanh */}
-        {Array.from({length: 4}).map((_, i) => {
-          const angle = (i / 4) * Math.PI * 2
-          const x = Math.cos(angle) * 0.6
-          const z = Math.sin(angle) * 0.6
-          return (
-            <group key={i} position={[x, -0.4, z]}>
-              <mesh>
-                <sphereGeometry args={[0.08, 8, 6]} />
-                <meshStandardMaterial 
-                  color={'#FFFACD'} 
-                  emissive={'#FFFACD'} 
-                  emissiveIntensity={0.4}
-                />
-              </mesh>
-            </group>
-          )
-        })}
-        
-        {/* Ánh sáng từ đèn chùm */}
-        <pointLight 
-          position={[0, -0.5, 0]} 
-          intensity={1.0}
-          color="#FFFAF0"
-          distance={15}
-          decay={2}
-        />
       </group>
       
-      {/* Hoa văn trang trí 4 góc */}
+      {/* Hoa văn trang trí 4 góc - tối ưu */}
       {[
         [-8, 0, -8], [8, 0, -8], [-8, 0, 8], [8, 0, 8]
       ].map((pos, i) => (
         <group key={i} position={[pos[0], 3.92, pos[2]]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[0.3, 0.6, 8]} />
-            <meshStandardMaterial 
-              color={'#CD853F'} 
-              metalness={0.5}
-              roughness={0.4}
+            <ringGeometry args={[0.3, 0.6, 6]} />
+            <meshBasicMaterial 
+              color={'#CD853F'}
             />
           </mesh>
         </group>
       ))}
     </group>
   )
-}
+})
 
-function MuseumSign() {
+const MuseumSign = memo(() => {
   return (
     <group position={[0, 3.2, 10.2]}>
       {/* Nền bảng hiệu */}
@@ -331,9 +290,9 @@ function MuseumSign() {
       </Text>
     </group>
   )
-}
+})
 
-function VintageVehicle({ position = [0, 0, 0] }) {
+const VintageVehicle = memo(({ position = [0, 0, 0] }) => {
   return (
     <group position={position}>
       {/* Dây chắn xung quanh xe */}
@@ -446,28 +405,28 @@ function VintageVehicle({ position = [0, 0, 0] }) {
       <mesh position={[-1.0, 0.25, 0.9]} castShadow rotation={[Math.PI/2, 0, 0]}>
         <cylinderGeometry args={[0.35, 0.35, 0.25, 12]} />
         <meshStandardMaterial 
-          color={'#2C2C2C'} 
+          color={'#4A4A4A'} 
           roughness={0.9}
         />
       </mesh>
       <mesh position={[-1.0, 0.25, -0.9]} castShadow rotation={[Math.PI/2, 0, 0]}>
         <cylinderGeometry args={[0.35, 0.35, 0.25, 12]} />
         <meshStandardMaterial 
-          color={'#2C2C2C'} 
+          color={'#4A4A4A'} 
           roughness={0.9}
         />
       </mesh>
       <mesh position={[1.0, 0.25, 0.9]} castShadow rotation={[Math.PI/2, 0, 0]}>
         <cylinderGeometry args={[0.35, 0.35, 0.25, 12]} />
         <meshStandardMaterial 
-          color={'#2C2C2C'} 
+          color={'#4A4A4A'} 
           roughness={0.9}
         />
       </mesh>
       <mesh position={[1.0, 0.25, -0.9]} castShadow rotation={[Math.PI/2, 0, 0]}>
         <cylinderGeometry args={[0.35, 0.35, 0.25, 12]} />
         <meshStandardMaterial 
-          color={'#2C2C2C'} 
+          color={'#4A4A4A'} 
           roughness={0.9}
         />
       </mesh>
@@ -522,19 +481,19 @@ function VintageVehicle({ position = [0, 0, 0] }) {
         <mesh position={[-1.75, 0.9, 0]} rotation={[0, Math.PI/2, 0]}>
           <planeGeometry args={[0.8, 0.6]} />
           <meshStandardMaterial 
-            color={'#2C2C2C'} 
+            color={'#696969'} 
             roughness={0.9}
           />
         </mesh>
         <mesh position={[-1.75, 0.6, 0]} rotation={[0, Math.PI/2, 0]}>
           <planeGeometry args={[0.5, 0.2]} />
-          <meshStandardMaterial color={'#FFFFFF'} />
+          <meshStandardMaterial color={'#F5F5DC'} />
         </mesh>
         <Text
           position={[-1.75, 0.6, 0.11]}
           rotation={[0, Math.PI/2, 0]}
           fontSize={0.08}
-          color="#000000"
+          color="#8B0000"
           anchorX="center"
           anchorY="middle"
           fontWeight="bold"
@@ -577,7 +536,7 @@ function VintageVehicle({ position = [0, 0, 0] }) {
       {/* Vô lăng */}
       <mesh position={[0.9, 1.5, 0.5]} rotation={[0, 0, Math.PI/2]}>
         <torusGeometry args={[0.15, 0.02, 6, 16]} />
-        <meshStandardMaterial color={'#2C2C2C'} />
+        <meshStandardMaterial color={'#4A4A4A'} />
       </mesh>
 
       {/* Cửa xe */}
@@ -608,14 +567,7 @@ function VintageVehicle({ position = [0, 0, 0] }) {
         />
       </mesh>
 
-      {/* Đèn chiếu sáng cho xe */}
-      <spotLight 
-        position={[0, 4, 3]} 
-        target-position={[0, 0, 0]}
-        intensity={1.0}
-        angle={Math.PI / 3}
-        penumbra={0.3}
-      />
+      {/* Removed spotlight - using global lighting for performance */}
 
       {/* Bảng thông tin xe */}
       <mesh position={[1, 1.5, 2.5]} rotation={[0, 0, 0]}>
@@ -655,9 +607,9 @@ function VintageVehicle({ position = [0, 0, 0] }) {
       </Text>
     </group>
   )
-}
+})
 
-function DisplayCase({ position, artifactType }) {
+const DisplayCase = memo(({ position, artifactType }) => {
   const flagTexture = useTexture('/vietnam-flag.jpg')
   
   const artifacts = {
@@ -740,7 +692,7 @@ function DisplayCase({ position, artifactType }) {
           <group>
             {/* Nón cối chính */}
             <mesh position={[0, 0, 0]}>
-              <sphereGeometry args={[0.18, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.6]} />
+              <sphereGeometry args={[0.18, 8, 6, 0, Math.PI * 2, 0, Math.PI * 0.6]} />
               <meshStandardMaterial 
                 color={'#3A5F2D'} 
                 roughness={0.9}
@@ -759,11 +711,11 @@ function DisplayCase({ position, artifactType }) {
             {/* Quai cằm */}
             <mesh position={[0.12, -0.14, 0]} rotation={[0, 0, Math.PI/4]}>
               <cylinderGeometry args={[0.008, 0.008, 0.15, 6]} />
-              <meshStandardMaterial color={'#4A4A4A'} />
+              <meshStandardMaterial color={'#8B7355'} />
             </mesh>
             <mesh position={[-0.12, -0.14, 0]} rotation={[0, 0, -Math.PI/4]}>
               <cylinderGeometry args={[0.008, 0.008, 0.15, 6]} />
-              <meshStandardMaterial color={'#4A4A4A'} />
+              <meshStandardMaterial color={'#8B7355'} />
             </mesh>
             
 
@@ -916,13 +868,12 @@ function DisplayCase({ position, artifactType }) {
         {renderArtifact()}
       </group>
       
-      {/* Đèn LED chiếu sáng */}
-      <pointLight position={[0, 1.8, 0]} intensity={0.4} color="#FFFFFF" />
+      {/* Removed point light for performance */}
       
       {/* Bảng tên hiện đại */}
       <mesh position={[0, 0.95, 0.7]}>
         <planeGeometry args={[1.0, 0.25]} />
-        <meshStandardMaterial color={'#1C1C1C'} />
+        <meshStandardMaterial color={'#8B0000'} />
       </mesh>
       
       {/* Text trên bảng tên */}
@@ -938,9 +889,9 @@ function DisplayCase({ position, artifactType }) {
       </Text>
     </group>
   )
-}
+})
 
-function Door({ position = [0, 1, 5] }) {
+const Door = memo(({ position = [0, 1, 5] }) => {
   const leftDoorRef = useRef()
   const rightDoorRef = useRef()
   const groupRef = useRef()
@@ -1024,7 +975,7 @@ function Door({ position = [0, 1, 5] }) {
 
         {/* Tay nắm cửa trái - trong cùng group nên sẽ xoay theo */}
         <mesh position={[1.1, 1.2, 0.1]}>
-          <sphereGeometry args={[0.04, 8, 6]} />
+          <sphereGeometry args={[0.04, 6, 4]} />
           <meshStandardMaterial 
             color={'#FFD700'} 
             metalness={0.8}
@@ -1054,7 +1005,7 @@ function Door({ position = [0, 1, 5] }) {
 
         {/* Tay nắm cửa phải - trong cùng group nên sẽ xoay theo */}
         <mesh position={[-1.1, 1.2, 0.1]}>
-          <sphereGeometry args={[0.04, 8, 6]} />
+          <sphereGeometry args={[0.04, 6, 4]} />
           <meshStandardMaterial 
             color={'#FFD700'} 
             metalness={0.8}
@@ -1096,7 +1047,7 @@ function Door({ position = [0, 1, 5] }) {
       </mesh>
     </group>
   )
-}
+})
 
 export default function Museum() {
   return (
@@ -1105,9 +1056,9 @@ export default function Museum() {
       <Floor />
       <Ceiling />
 
-      {/* Ánh sáng tổng thể cho bảo tàng */}
-      <ambientLight intensity={0.4} />
-      <pointLight position={[0, 3.5, 0]} intensity={0.6} color="#FFFFFF" />
+      {/* Optimized lighting - single point light */}
+      <ambientLight intensity={0.6} />
+      <pointLight position={[0, 3, 0]} intensity={0.8} color="#FFFFFF" distance={30} decay={1} />
       
       {/* Tường sau - màu tím nhạt - 4 pictures */}
       <Wall 
@@ -1128,7 +1079,7 @@ export default function Museum() {
         count={4}
       />
 
-      {/* Tường phải - màu hồng nhạt - 3 pictures */}
+      {/* Tường phải - màu hồng nhạt - 4 pictures */}
       <Wall 
         position={[10, 2, 0]} 
         rotation={[0, -Math.PI / 2, 0]} 
@@ -1138,7 +1089,7 @@ export default function Museum() {
         count={4}
       />
 
-      {/* Tường trước với cửa - màu be - KHÔNG có khung hình ngoài */}
+      {/* Tường trước với cửa - màu be - CÓ TRANG TRÍ LỊCH SỬ */}
       <group position={[0, 0, 10]}>
         {/* Tường bên trái cửa */}
         <mesh position={[-5.65, 2, 0]} castShadow>
@@ -1168,6 +1119,198 @@ export default function Museum() {
         </mesh>
         
         <Door position={[0, 0, 0]} />
+
+        {/* === TRANG TRÍ TƯỜNG BÊN TRÁI CỬA (Nhìn từ trong ra) === */}
+        {/* Biểu tượng Búa Liềm */}
+        <group position={[-5.65, 3, -0.16]} rotation={[0, Math.PI, 0]}>
+          <mesh>
+            <circleGeometry args={[0.5, 32]} />
+            <meshStandardMaterial color={'#DC143C'} />
+          </mesh>
+          <Text
+            position={[0, 0, 0.01]}
+            fontSize={0.6}
+            color="#FFD700"
+            anchorX="center"
+            anchorY="middle"
+            fontWeight="bold"
+          >
+            ☭
+          </Text>
+        </group>
+
+        {/* Năm thành lập Đảng */}
+        <group position={[-5.65, 2.2, -0.16]} rotation={[0, Math.PI, 0]}>
+          <mesh>
+            <planeGeometry args={[2.2, 0.5]} />
+            <meshStandardMaterial color={'#8B0000'} />
+          </mesh>
+          <Text
+            position={[0, 0, 0.01]}
+            fontSize={0.15}
+            color="#FFD700"
+            anchorX="center"
+            anchorY="middle"
+            fontWeight="bold"
+          >
+            3 - 2 - 1930
+          </Text>
+        </group>
+
+        {/* Khẩu hiệu 1 */}
+        <group position={[-5.65, 1.5, -0.16]} rotation={[0, Math.PI, 0]}>
+          <mesh>
+            <planeGeometry args={[3.5, 0.8]} />
+            <meshStandardMaterial color={'#8B0000'} />
+          </mesh>
+          <Text
+            position={[0, 0, 0.01]}
+            fontSize={0.09}
+            color="#FFD700"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3.3}
+            lineHeight={1.2}
+          >
+            ĐẢNG CỘNG SẢN VIỆT NAM
+            LÃNH ĐẠO ĐẤT NƯỚC
+            VƯỢT QUA MỌI THÁCH THỨC
+          </Text>
+        </group>
+
+        {/* Thông tin bổ sung */}
+        <group position={[-5.65, 0.7, -0.16]} rotation={[0, Math.PI, 0]}>
+          <mesh>
+            <planeGeometry args={[3.2, 0.5]} />
+            <meshStandardMaterial color={'#FFF8DC'} />
+          </mesh>
+          <Text
+            position={[0, 0, 0.01]}
+            fontSize={0.065}
+            color="#8B0000"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3}
+            lineHeight={1.2}
+          >
+            Được thành lập tại Hương Cảng
+            Chủ tịch Hồ Chí Minh sáng lập
+          </Text>
+        </group>
+
+        {/* === TRANG TRÍ TƯỜNG BÊN PHẢI CỬA (Nhìn từ trong ra) === */}
+        {/* Timeline lịch sử quan trọng */}
+        <group position={[5.65, 3.2, -0.16]} rotation={[0, Math.PI, 0]}>
+        
+          <Text
+            position={[0, 0, 0.01]}
+            fontSize={0.13}
+            color="#FFD700"
+            anchorX="center"
+            anchorY="middle"
+            fontWeight="bold"
+          >
+            NHỮNG MỐC LỊCH SỬ
+          </Text>
+        </group>
+
+        {/* Các mốc quan trọng */}
+        <group position={[5.65, 2.4, -0.16]} rotation={[0, Math.PI, 0]}>
+          <mesh>
+            <planeGeometry args={[3.8, 1.8]} />
+            <meshStandardMaterial color={'#8B4513'} />
+          </mesh>
+          <Text
+            position={[0, 0.6, 0.01]}
+            fontSize={0.08}
+            color="#FFD700"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3.6}
+            lineHeight={1.3}
+          >
+            1930 - Thành lập Đảng
+          </Text>
+          <Text
+            position={[0, 0.35, 0.01]}
+            fontSize={0.08}
+            color="#FFFFFF"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3.6}
+            lineHeight={1.3}
+          >
+            1945 - Cách mạng tháng Tám
+          </Text>
+          <Text
+            position={[0, 0.1, 0.01]}
+            fontSize={0.08}
+            color="#FFD700"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3.6}
+            lineHeight={1.3}
+          >
+            1954 - Chiến thắng Điện Biên Phủ
+          </Text>
+          <Text
+            position={[0, -0.15, 0.01]}
+            fontSize={0.08}
+            color="#FFFFFF"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3.6}
+            lineHeight={1.3}
+          >
+            1975 - Thống nhất đất nước
+          </Text>
+          <Text
+            position={[0, -0.4, 0.01]}
+            fontSize={0.08}
+            color="#FFD700"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3.6}
+            lineHeight={1.3}
+          >
+            1986 - Đổi mới đất nước
+          </Text>
+          <Text
+            position={[0, -0.65, 0.01]}
+            fontSize={0.08}
+            color="#FFFFFF"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={3.6}
+            lineHeight={1.3}
+          >
+            2021 - Đại hội XIII
+          </Text>
+        </group>
+
+  
+
+        {/* === TƯỜNG TRÊN CỬA === */}
+        {/* Khẩu hiệu chính trên cửa */}
+        <group position={[0, 3.5, -0.16]} rotation={[0, Math.PI, 0]}>
+          <mesh>
+            <planeGeometry args={[5, 0.7]} />
+            <meshStandardMaterial color={'#8B0000'} />
+          </mesh>
+          <Text
+            position={[0, 0, 0.01]}
+            fontSize={0.16}
+            color="#FFD700"
+            anchorX="center"
+            anchorY="middle"
+            fontWeight="bold"
+            maxWidth={4.8}
+          >
+            ĐẢNG - NHÂN DÂN - DÂN TỘC
+          </Text>
+        </group>
+
+
       </group>
 
       {/* Bảng hiệu bảo tàng */}
@@ -1177,7 +1320,7 @@ export default function Museum() {
       <group position={[0, 0, 12]}>
         {/* Cột cờ bên trái */}
         <mesh position={[-8, 2.5, 2]} castShadow>
-          <cylinderGeometry args={[0.06, 0.06, 5, 8]} />
+          <cylinderGeometry args={[0.06, 0.06, 5, 6]} />
           <meshStandardMaterial 
             color={'#8B4513'} 
             roughness={0.7}
@@ -1193,7 +1336,7 @@ export default function Museum() {
 
         {/* Cột cờ bên phải */}
         <mesh position={[8, 2.5, 2]} castShadow>
-          <cylinderGeometry args={[0.06, 0.06, 5, 8]} />
+          <cylinderGeometry args={[0.06, 0.06, 5, 6]} />
           <meshStandardMaterial 
             color={'#8B4513'} 
             roughness={0.7}
@@ -1244,16 +1387,6 @@ export default function Museum() {
           LÃNH ĐẠO CÁCH MẠNG
           GIẢI PHÓNG DÂN TỘC
         </Text>
-
-        {/* Đèn chiếu sáng mặt tiền - Giảm số lượng */}
-        <spotLight 
-          position={[0, 6, 3]} 
-          target-position={[0, 3, 0]}
-          intensity={1.2}
-          angle={Math.PI / 4}
-          penumbra={0.4}
-          color="#FFFAF0"
-        />
       </group>
 
       {/* Xe cổ quân sự - đặt ở trung tâm */}

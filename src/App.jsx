@@ -1,31 +1,44 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { Sky } from '@react-three/drei'
 import Museum from './Museum'
 import FirstPersonControls from './FirstPersonControls'
+
+// Loading placeholder
+function Loader() {
+  return (
+    <mesh>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshBasicMaterial color="#FFD700" />
+    </mesh>
+  )
+}
 
 export default function App() {
   return (
     <div className="app-root">
       <Canvas 
-        shadows // BẬT SHADOWS nhưng tối ưu
+        shadows="soft"
         camera={{ position: [0, 1.7, 18], fov: 75 }}
         gl={{
-          antialias: true, // BẬT antialiasing cho đẹp hơn
+          antialias: window.innerWidth > 1920 ? true : false,
           powerPreference: "high-performance",
           alpha: false,
           stencil: false,
-          depth: true
+          depth: true,
+          preserveDrawingBuffer: false
         }}
-        dpr={[1, 1.5]} // Pixel ratio tối ưu
-        performance={{ min: 0.5 }} // Tự động điều chỉnh
+        dpr={[0.8, 1.5]}
+        performance={{ min: 0.4, max: 1, debounce: 200 }}
+        frameloop="always"
       >
-        <ambientLight intensity={0.5} />
+        <color attach="background" args={['#87CEEB']} />
+        <fog attach="fog" args={['#87CEEB', 15, 50]} />
+        
         <directionalLight 
           castShadow
           position={[10, 15, 10]} 
-          intensity={0.7}
-          shadow-mapSize={[512, 512]} // Shadow resolution thấp hơn để tăng FPS
+          intensity={0.8}
+          shadow-mapSize={[1024, 1024]}
           shadow-camera-far={40}
           shadow-camera-left={-15}
           shadow-camera-right={15}
@@ -33,10 +46,10 @@ export default function App() {
           shadow-camera-bottom={-15}
           shadow-bias={-0.0001}
         />
-        {/* Thêm đèn phụ để tạo chiều sâu */}
-        <hemisphereLight intensity={0.3} groundColor="#444444" />
-        <Sky sunPosition={[100, 20, 100]} />
-        <Museum />
+        
+        <Suspense fallback={<Loader />}>
+          <Museum />
+        </Suspense>
         <FirstPersonControls />
       </Canvas>
       <div className="ui">
