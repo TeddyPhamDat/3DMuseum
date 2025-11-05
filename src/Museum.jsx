@@ -18,24 +18,100 @@ function VietnamFlag({ position, rotation, size = [1.2, 0.8] }) {
   )
 }
 
-function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0', size = [10, 3, 0.3] }) {
+function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0', size = [10, 3, 0.3], startIndex = 0, count = 11 }) {
   // Extended historical revolutionary images
   const historicalEvents = [
-    { year: '1930', event: 'Thành lập Đảng Cộng sản Việt Nam', color: '#FF4500' },
-    { year: '1941', event: 'Thành lập Việt Minh', color: '#DC143C' },
-    { year: '1945', event: 'Cách mạng tháng Tám', color: '#B22222' },
-    { year: '1946', event: 'Kháng chiến chống Pháp', color: '#8B0000' },
-    { year: '1954', event: 'Chiến thắng Điện Biên Phủ', color: '#FF6347' },
-    { year: '1969', event: 'Di chúc Chủ tịch Hồ Chí Minh', color: '#CD5C5C' },
-    { year: '1975', event: 'Giải phóng miền Nam', color: '#DC143C' },
-    { year: '1986', event: 'Đổi mới kinh tế', color: '#FF4500' },
-    { year: '2006', event: 'Gia nhập WTO', color: '#B22222' }
+    { 
+      year: '1930', 
+      event: 'Thành lập Đảng Cộng sản Việt Nam', 
+      image: '/1930.png',
+      description: 'Ngày 3/2/1930, tại Hương Cảng (Trung Quốc), Nguyễn Ái Quốc chủ trì Hội nghị hợp nhất các tổ chức cộng sản trong nước thành Đảng Cộng sản Việt Nam.'
+    },
+    { 
+      year: '1945', 
+      event: 'Bác Hồ đọc Bảng Tuyên Ngôn Độc Lập', 
+      image: '/1945.png',
+      description: 'Ngày 2/9/1945, tại Quảng trường Ba Đình, Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập, khai sinh nước Việt Nam Dân chủ Cộng hòa.'
+    },
+    { 
+      year: '1951', 
+      event: 'Đại hội đảng lần thứ II', 
+      image: '/1951.png',
+      description: 'Đại hội lần thứ II của Đảng họp từ 11-19/2/1951 tại Tuyên Quang, chính thức lấy tên là Đảng Lao động Việt Nam.'
+    },
+    { 
+      year: '1954', 
+      event: 'Chiến thắng Điện Biên Phủ', 
+      image: '/1954.png',
+      description: 'Chiến thắng lịch sử Điện Biên Phủ ngày 7/5/1954 đã lập nên chiến công vang dội, buộc thực dân Pháp phải ký Hiệp định Genève.'
+    },
+    { 
+      year: '1960', 
+      event: 'Đại hội đảng lần thứ III', 
+      image: '/1960.png',
+      description: 'Đại hội lần thứ III họp từ 5-10/9/1960 tại Hà Nội, đề ra đường lối xây dựng chủ nghĩa xã hội ở miền Bắc và giải phóng miền Nam.'
+    },
+    { 
+      year: '1975', 
+      event: 'Giải phóng miền Nam thống nhất Đất nước', 
+      image: '/1975.png',
+      description: 'Ngày 30/4/1975, chiến dịch Hồ Chí Minh thắng lợi hoàn toàn, giải phóng miền Nam, thống nhất đất nước, kết thúc 21 năm chia cắt.'
+    },
+    { 
+      year: '1976', 
+      event: 'Đại hội đảng lần thứ IV', 
+      image: '/1976.png',
+      description: 'Đại hội lần thứ IV họp từ 14-20/12/1976, là Đại hội Đảng thống nhất toàn quốc sau khi đất nước hoàn toàn độc lập và thống nhất.'
+    },
+    { 
+      year: '1986', 
+      event: 'Đại hội đảng lần thứ VI', 
+      image: '/1986.png',
+      description: 'Đại hội lần thứ VI họp từ 15-18/12/1986, khởi xướng công cuộc Đổi mới toàn diện đất nước, mở ra thời kỳ phát triển mới.'
+    },
+    { 
+      year: '1991', 
+      event: 'Đại hội đảng lần thứ VII', 
+      image: '/1991.png',
+      description: 'Đại hội lần thứ VII họp từ 24-27/6/1991, tiềp tục đẩy mạnh công cuộc đổi mới, phát triển kinh tế thị trường định hướng xã hội chủ nghĩa.'
+    },
+    { 
+      year: '2011', 
+      event: 'Đại hội đảng lần thứ XI', 
+      image: '/2011.png',
+      description: 'Đại hội lần thứ XI họp từ 12-19/1/2011, đề ra mục tiêu phấn đấu đến năm 2020 nước ta cơ bản trở thành nước công nghiệp.'
+    },
+    { 
+      year: '2021', 
+      event: 'Đại hội đảng lần thứ XIII', 
+      image: '/2021.png',
+      description: 'Đại hội lần thứ XIII họp từ 25/1-2/2/2021, vạch ra phương hướng phát triển đất nước trong giai đoạn mới, hướng tới thịnh vượng.'
+    },
   ]
 
-  // Calculate photos that can fit (2 rows)
-  const photosPerRow = Math.min(Math.floor(size[0] / 2.5), 4)
-  const totalPhotos = Math.min(photosPerRow * 2, historicalEvents.length)
+  // Load all textures
+  const textures = useTexture([
+    '/1930.png',
+    '/1945.png',
+    '/1951.png',
+    '/1954.png',
+    '/1960.png',
+    '/1975.png',
+    '/1976.png',
+    '/1986.png',
+    '/1991.png',
+    '/2011.png',
+    '/2021.png',
+  ])
 
+  // Get pictures for this wall
+  const wallEvents = historicalEvents.slice(startIndex, startIndex + count)
+  
+  // CHIỀU NGANG - 1 hàng duy nhất
+  const pictureWidth = 2.0 // Chiều rộng của mỗi khung ảnh
+  const pictureSpacing = 0.3 // Khoảng cách giữa các ảnh
+  const totalPictureWidth = pictureWidth + pictureSpacing
+  
   return (
     <group position={position} rotation={rotation}>
       {/* Tường chính - CÓ ÁNH SÁNG */}
@@ -45,29 +121,29 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
       </mesh>
 
       {/* Đèn spotlight nhẹ cho các khung tranh */}
-      {[0, 1].map((row) => (
-        <pointLight 
-          key={row}
-          position={[0, row === 0 ? 0.8 : -0.5, 0.8]} 
-          intensity={0.4}
-          distance={6}
-          decay={2}
-          color="#FFF8DC"
-        />
-      ))}
+      <pointLight 
+        position={[0, 0, 0.8]} 
+        intensity={0.5}
+        distance={8}
+        decay={2}
+        color="#FFF8DC"
+      />
 
-      {/* Khung ảnh lịch sử - 2 hàng */}
-      {historicalEvents.slice(0, totalPhotos).map((event, i) => {
-        const isTopRow = i < photosPerRow
-        const columnIndex = i % photosPerRow
-        const xPosition = -size[0]/2 + 1.5 + columnIndex * (size[0]-3)/(photosPerRow-1)
-        const yPosition = isTopRow ? 0.8 : -0.5
+      {/* Khung ảnh lịch sử - 1 HÀNG NGANG */}
+      {wallEvents.map((event, i) => {
+        // Tính toán vị trí X - căn đều theo chiều ngang
+        const totalWidth = wallEvents.length * totalPictureWidth - pictureSpacing
+        const startX = -totalWidth / 2
+        const xPosition = startX + (i * totalPictureWidth) + (pictureWidth / 2)
+        
+        // Vị trí Y - giữa tường
+        const yPosition = 0
         
         return (
           <group key={i} position={[xPosition, yPosition, size[2]/2 + 0.01]}>
             {/* Khung tranh gỗ với chất liệu đẹp */}
             <mesh castShadow>
-              <planeGeometry args={[2, 1.5]} />
+              <planeGeometry args={[pictureWidth, 1.8]} />
               <meshStandardMaterial 
                 color={'#654321'} 
                 roughness={0.7}
@@ -76,15 +152,15 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
             </mesh>
             {/* Ảnh lịch sử */}
             <mesh position={[0, 0, 0.01]} castShadow>
-              <planeGeometry args={[1.8, 1.3]} />
+              <planeGeometry args={[1.8, 1.5]} />
               <meshStandardMaterial 
-                color={event.color}
+                map={textures[startIndex + i]}
                 roughness={0.6}
               />
             </mesh>
             {/* Năm */}
             <Text
-              position={[0, -0.5, 0.02]}
+              position={[0, -0.55, 0.02]}
               fontSize={0.12}
               color="#FFD700"
               anchorX="center"
@@ -94,17 +170,18 @@ function Wall({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0f0f0'
               {event.year}
             </Text>
             {/* Bảng tên sự kiện */}
-            <mesh position={[0, -0.8, 0.01]}>
-              <planeGeometry args={[2, 0.3]} />
+            <mesh position={[0, -0.95, 0.01]}>
+              <planeGeometry args={[pictureWidth, 0.6]} />
               <meshStandardMaterial color={'#1C1C1C'} />
             </mesh>
             <Text
-              position={[0, -0.8, 0.02]}
+              position={[0, -0.95, 0.02]}
               fontSize={0.06}
-              color="#FFFFFF"
+              color="#FFD700"
               anchorX="center"
               anchorY="middle"
               maxWidth={1.9}
+              fontWeight="bold"
             >
               {event.event}
             </Text>
@@ -1032,30 +1109,36 @@ export default function Museum() {
       <ambientLight intensity={0.4} />
       <pointLight position={[0, 3.5, 0]} intensity={0.6} color="#FFFFFF" />
       
-      {/* Tường sau - màu tím nhạt */}
+      {/* Tường sau - màu tím nhạt - 4 pictures */}
       <Wall 
         position={[0, 2, -10]} 
         color={'#E6E6FA'} 
-        size={[20, 4, 0.3]}
+        size={[40, 10, 0.3]}
+        startIndex={0}
+        count={4}
       />
 
-      {/* Tường trái - màu vàng nhạt */}
+      {/* Tường trái - màu vàng nhạt - 4 pictures */}
       <Wall 
         position={[-10, 2, 0]} 
         rotation={[0, Math.PI / 2, 0]} 
         color={'#F0E68C'} 
-        size={[20, 4, 0.3]}
+        size={[40, 10, 0.3]}
+        startIndex={4}
+        count={4}
       />
 
-      {/* Tường phải - màu hồng nhạt */}
+      {/* Tường phải - màu hồng nhạt - 3 pictures */}
       <Wall 
         position={[10, 2, 0]} 
         rotation={[0, -Math.PI / 2, 0]} 
         color={'#FFE4E1'} 
-        size={[20, 4, 0.3]}
+        size={[40, 10, 0.3]}
+        startIndex={8}
+        count={4}
       />
 
-      {/* Tường trước với cửa - màu be */}
+      {/* Tường trước với cửa - màu be - KHÔNG có khung hình ngoài */}
       <group position={[0, 0, 10]}>
         {/* Tường bên trái cửa */}
         <mesh position={[-5.65, 2, 0]} castShadow>
@@ -1092,8 +1175,6 @@ export default function Museum() {
 
       {/* Trang trí mặt tiền - Lịch sử Đảng */}
       <group position={[0, 0, 12]}>
-        // ...existing code...
-
         {/* Cột cờ bên trái */}
         <mesh position={[-8, 2.5, 2]} castShadow>
           <cylinderGeometry args={[0.06, 0.06, 5, 8]} />
