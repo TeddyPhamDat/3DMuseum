@@ -35,57 +35,57 @@ const HISTORICAL_EVENTS = [
   { 
     year: '1930', 
     event: 'Thành lập Đảng Cộng sản Việt Nam', 
-    description: 'Ngày 3/2/1930, tại Hương Cảng (Trung Quốc), Nguyễn Ái Quốc chủ trì Hội nghị hợp nhất các tổ chức cộng sản trong nước thành Đảng Cộng sản Việt Nam.'
+    description: 'Năm 1930, trong bối cảnh đất nước bị thực dân Pháp đô hộ và các phong trào yêu nước thất bại, Nguyễn Ái Quốc đã triệu tập Hội nghị hợp nhất các tổ chức cộng sản tại Hồng Kông, thành lập Đảng Cộng sản Việt Nam.Sự ra đời của Đảng đã chấm dứt khủng hoảng đường lối cứu nước, mở ra con đường cách mạng vô sản, kết hợp chủ nghĩa Mác – Lênin với phong trào công nhân và yêu nước.Từ đây, dân tộc Việt Nam có một lực lượng lãnh đạo cách mạng chân chính, đưa cách mạng đi từ thắng lợi này đến thắng lợi khác.'
   },
   { 
     year: '1945', 
     event: 'Bác Hồ đọc Bảng Tuyên Ngôn Độc Lập', 
-    description: 'Ngày 2/9/1945, tại Quảng trường Ba Đình, Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập, khai sinh nước Việt Nam Dân chủ Cộng hòa.'
+    description: 'Ngày 2 tháng 9 năm 1945, tại Quảng trường Ba Đình lịch sử, Chủ tịch Hồ Chí Minh trịnh trọng tuyên bố sự ra đời của nước Việt Nam Dân chủ Cộng hòa, khai sinh nhà nước công nông đầu tiên ở Đông Nam Á.Bản Tuyên ngôn Độc lập khẳng định quyền tự do, bình đẳng của dân tộc Việt Nam và ý chí sắt đá của nhân dân:“Toàn thể dân Việt Nam quyết đem tất cả tinh thần và lực lượng, tính mệnh và của cải để giữ vững quyền tự do và độc lập ấy.”Sự kiện này đã mở ra kỷ nguyên độc lập, tự do và chủ nghĩa xã hội cho dân tộc Việt Nam.'
   },
   { 
     year: '1951', 
     event: 'Đại hội đảng lần thứ II', 
-    description: 'Đại hội lần thứ II của Đảng họp từ 11-19/2/1951 tại Tuyên Quang, chính thức lấy tên là Đảng Lao động Việt Nam.'
+    description: 'Từ ngày 11 đến 19 tháng 2 năm 1951 tại Chiêm Hóa, Tuyên Quang, Đảng họp Đại hội Đại biểu toàn quốc lần thứ II, được mệnh danh là “Đại hội Kháng chiến – Kiến quốc”.Đại hội quyết định đổi tên Đảng thành Đảng Lao động Việt Nam, khẳng định đường lối cách mạng dân tộc dân chủ nhân dân, xác định nhiệm vụ tiêu diệt thực dân Pháp, đánh bại can thiệp Mỹ, tiến tới độc lập và chủ nghĩa xã hội.Đây là Đại hội mở đường cho thắng lợi của kháng chiến chống Pháp.'
   },
   { 
     year: '1954', 
     event: 'Chiến thắng Điện Biên Phủ', 
-    description: 'Chiến thắng lịch sử Điện Biên Phủ ngày 7/5/1954 đã lập nên chiến công vang dội, buộc thực dân Pháp phải ký Hiệp định Genève.'
+    description: 'Sau 56 ngày đêm “khoét núi, ngủ hầm, mưa dầm, cơm vắt”, quân và dân ta đã đập tan Tập đoàn cứ điểm Điện Biên Phủ, bắt sống tướng Đờ Cát Chiến thắng này kết thúc thắng lợi cuộc kháng chiến chống Pháp, buộc Pháp ký Hiệp định Giơnevơ, công nhận độc lập, chủ quyền và toàn vẹn lãnh thổ Việt Nam.Điện Biên Phủ đi vào lịch sử như một “thiên sử vàng”, cổ vũ phong trào giải phóng dân tộc trên toàn thế giới.'
   },
   { 
     year: '1960', 
     event: 'Đại hội đảng lần thứ III', 
-    description: 'Đại hội lần thứ III họp từ 5-10/9/1960 tại Hà Nội, đề ra đường lối xây dựng chủ nghĩa xã hội ở miền Bắc và giải phóng miền Nam.'
+    description: 'Đại hội đại biểu toàn quốc lần thứ III của Đảng Cộng sản Việt Nam (5–10/9/1960, tại Hà Nội) là dấu mốc quan trọng, đánh dấu bước phát triển toàn diện của Đảng sau thắng lợi kháng chiến chống Pháp. Đại hội xác định hai nhiệm vụ chiến lược: xây dựng chủ nghĩa xã hội ở miền Bắc và đấu tranh giải phóng miền Nam, thống nhất đất nước. Đây cũng là đại hội thông qua Cương lĩnh, Điều lệ Đảng và bầu Chủ tịch Hồ Chí Minh làm Chủ tịch Đảng, đồng chí Lê Duẩn làm Bí thư thứ nhất. Sự kiện có ý nghĩa lịch sử to lớn, khẳng định vai trò lãnh đạo toàn diện của Đảng trong sự nghiệp cách mạng dân tộc.'
   },
   { 
     year: '1975', 
     event: 'Giải phóng miền Nam thống nhất Đất nước', 
-    description: 'Ngày 30/4/1975, chiến dịch Hồ Chí Minh thắng lợi hoàn toàn, giải phóng miền Nam, thống nhất đất nước, kết thúc 21 năm chia cắt.'
+    description: 'Ngày 30 tháng 4 năm 1975, Chiến dịch Hồ Chí Minh lịch sử kết thúc thắng lợi, lá cờ cách mạng tung bay trên Dinh Độc Lập. Chiến thắng này chấm dứt 30 năm chiến tranh, đưa đất nước thống nhất, độc lập và toàn vẹn lãnh thổ. Từ đây, dân tộc Việt Nam bước vào kỷ nguyên hòa bình, thống nhất và xây dựng chủ nghĩa xã hội.'
   },
   { 
     year: '1976', 
     event: 'Đại hội đảng lần thứ IV', 
-    description: 'Đại hội lần thứ IV họp từ 14-20/12/1976, là Đại hội Đảng thống nhất toàn quốc sau khi đất nước hoàn toàn độc lập và thống nhất.'
+    description: 'Diễn ra tại Hà Nội, Đại hội IV là Đại hội đầu tiên sau thống nhất đất nước. Đảng Lao động Việt Nam chính thức đổi tên thành Đảng Cộng sản Việt Nam, xác định nhiệm vụ trung tâm là khôi phục và phát triển kinh tế, củng cố khối đại đoàn kết toàn dân. Khẩu hiệu của thời kỳ này vang lên mạnh mẽ: “Cả nước ta tiến nhanh, tiến mạnh, tiến vững chắc lên chủ nghĩa xã hội.”'
   },
   { 
     year: '1986', 
     event: 'Đại hội đảng lần thứ VI', 
-    description: 'Đại hội lần thứ VI họp từ 15-18/12/1986, khởi xướng công cuộc Đổi mới toàn diện đất nước, mở ra thời kỳ phát triển mới.'
+    description: 'Trong bối cảnh khủng hoảng kinh tế - xã hội, Đại hội VI đề ra đường lối Đổi mới toàn diện, chuyển từ cơ chế bao cấp sang kinh tế thị trường định hướng xã hội chủ nghĩa. Đây là bước ngoặt lịch sử, đưa đất nước thoát khỏi trì trệ, mở ra thời kỳ phát triển và hội nhập quốc tế. “Đổi mới không phải là thay đổi mục tiêu xã hội chủ nghĩa, mà là làm cho chủ nghĩa xã hội được thực hiện tốt hơn.” – Trường Chinh.'
   },
   { 
     year: '1991', 
     event: 'Đại hội đảng lần thứ VII', 
-    description: 'Đại hội lần thứ VII họp từ 24-27/6/1991, tiềp tục đẩy mạnh công cuộc đổi mới, phát triển kinh tế thị trường định hướng xã hội chủ nghĩa.'
+    description: 'Trong bối cảnh hệ thống XHCN thế giới sụp đổ, Đại hội VII thông qua Cương lĩnh 1991, xác định tám đặc trưng cơ bản của xã hội XHCN và kiên định mục tiêu độc lập dân tộc gắn liền với chủ nghĩa xã hội. Đại hội khẳng định tiếp tục công cuộc Đổi mới, phát huy đại đoàn kết dân tộc và mở rộng quan hệ đối ngoại, hội nhập quốc tế. Đây là Đại hội của bản lĩnh, kiên định và niềm tin vào con đường xã hội chủ nghĩa Việt Nam.'
   },
   { 
     year: '2011', 
     event: 'Đại hội đảng lần thứ XI', 
-    description: 'Đại hội lần thứ XI họp từ 12-19/1/2011, đề ra mục tiêu phấn đấu đến năm 2020 nước ta cơ bản trở thành nước công nghiệp.'
+    description: 'Diễn ra tại Hà Nội từ ngày 12 đến 19 tháng 1 năm 2011. Đại hội tổng kết 25 năm đổi mới, đề ra Chiến lược phát triển 2011–2020, đưa đất nước bước vào thời kỳ đẩy mạnh công nghiệp hóa, hiện đại hóa. Đại hội khẳng định mục tiêu: Dân giàu, nước mạnh, dân chủ, công bằng, văn minh và chủ trương chủ động hội nhập quốc tế. Đây là Đại hội của phát triển, trí tuệ và đổi mới sáng tạo.'
   },
   { 
     year: '2021', 
     event: 'Đại hội đảng lần thứ XIII', 
-    description: 'Đại hội lần thứ XIII họp từ 25/1-2/2/2021, vạch ra phương hướng phát triển đất nước trong giai đoạn mới, hướng tới thịnh vượng.'
+    description: 'Tổ chức tại Hà Nội từ ngày 25/1 đến 1/2/2021, trong bối cảnh đất nước đạt thành tựu to lớn sau 35 năm Đổi mới.Đại hội xác định Chiến lược phát triển đến năm 2030, tầm nhìn 2045, hướng tới nước phát triển, thu nhập cao.Ba đột phá chiến lược được nhấn mạnh: thể chế, nhân lực, hạ tầng hiện đại.Khẩu hiệu hành động:“Khơi dậy khát vọng phát triển đất nước phồn vinh, hạnh phúc.”Đây là Đại hội của niềm tin và khát vọng vươn lên của dân tộc Việt Nam.'
   },
 ]
 
@@ -161,8 +161,8 @@ const Wall = memo(({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0
               <meshStandardMaterial color={'#8B0000'} />
             </mesh>
             <Text
-              position={[0, -0.9, 0.02]}
-              fontSize={0.055}
+              position={[0, -0.8, 0.02]}
+              fontSize={0.07}
               color="#FFD700"
               anchorX="center"
               anchorY="middle"
@@ -170,6 +170,22 @@ const Wall = memo(({ position = [0, 1.5, -5], rotation = [0, 0, 0], color = '#f0
               fontWeight="bold"
             >
               {event.event}
+            </Text>
+            {/* Bảng mô tả chi tiết */}
+            <mesh position={[0, -1.35, 0.01]}>
+              <planeGeometry args={[pictureWidth, 0.7]} />
+              <meshStandardMaterial color={'#8B0000'} />
+            </mesh>
+            <Text
+              position={[0, -1.2, 0.02]}
+              fontSize={0.06}
+              color="#FFD700"
+              anchorX="center"
+              anchorY="middle"
+              maxWidth={pictureWidth * 0.92}
+              lineHeight={1.2}
+            >
+              {event.description}
             </Text>
           </group>
         )
