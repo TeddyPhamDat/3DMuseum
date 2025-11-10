@@ -55,7 +55,7 @@ const HISTORICAL_EVENTS = [
   { 
     year: '1960', 
     event: 'Đại hội đảng lần thứ III', 
-    description: 'Đại hội đại biểu toàn quốc lần thứ III của Đảng Cộng sản Việt Nam (5–10/9/1960, tại Hà Nội) là dấu mốc quan trọng, đánh dấu bước phát triển toàn diện của Đảng sau thắng lợi kháng chiến chống Pháp. Đại hội xác định hai nhiệm vụ chiến lược: xây dựng chủ nghĩa xã hội ở miền Bắc và đấu tranh giải phóng miền Nam, thống nhất đất nước. Đây cũng là đại hội thông qua Cương lĩnh, Điều lệ Đảng và bầu Chủ tịch Hồ Chí Minh làm Chủ tịch Đảng, đồng chí Lê Duẩn làm Bí thư thứ nhất. Sự kiện có ý nghĩa lịch sử to lớn, khẳng định vai trò lãnh đạo toàn diện của Đảng trong sự nghiệp cách mạng dân tộc.'
+    description: 'Đại hội Đảng toàn quốc lần thứ III (5–10/9/1960, Hà Nội) đánh dấu bước phát triển toàn diện của Đảng sau thắng lợi chống Pháp. Đại hội đề ra hai nhiệm vụ chiến lược: xây dựng CNXH ở miền Bắc và đấu tranh giải phóng miền Nam, thống nhất đất nước; thông qua Cương lĩnh, Điều lệ Đảng, bầu Chủ tịch Hồ Chí Minh làm Chủ tịch Đảng, Lê Duẩn làm Bí thư. Sự kiện khẳng định vai trò lãnh đạo toàn diện của Đảng trong sự nghiệp cách mạng.'
   },
   { 
     year: '1975', 
